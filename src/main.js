@@ -133,6 +133,10 @@ function advance(dt) {
   recordBest();
 }
 
+/**
+ * Raises the best score as soon as a run that counts passes it, so the HUD can
+ * show `app.best` as is. The ?demo run never counts: it starts with free points.
+ */
 function recordBest() {
   if (!app.recordsBest || app.game.score <= app.best) return;
   app.best = app.game.score;
@@ -171,8 +175,7 @@ function render() {
 }
 
 function syncDom() {
-  const { els, game, lang } = app;
-  const best = Math.max(app.best, game.score);
+  const { els, game, lang, best } = app;
   updateHud(els, {
     lang,
     score: game.score,

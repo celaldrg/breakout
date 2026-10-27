@@ -20,6 +20,22 @@ function brickAt(state, row, col) {
   return state.bricks.find((b) => b.row === row && b.col === col);
 }
 
+/**
+ * Runs one update() that is a single sub-step: the ball travels a quarter
+ * radius (update() only splits moves longer than half a radius) at `angle`
+ * radians above the +x axis and ends with its centre at `end`.
+ * @returns {object} the ball right after that sub-step
+ */
+function subStepTo(state, end, angle) {
+  const speed = ballSpeed(state);
+  const travel = state.config.ballRadius / 4;
+  const ux = Math.cos(angle);
+  const uy = -Math.sin(angle);
+  state.balls = [createBall(state.config, end.x - ux * travel, end.y - uy * travel, ux * speed, uy * speed)];
+  update(state, travel / speed);
+  return state.balls[0];
+}
+
 test('circleRectHit: apart, face and corner contacts', () => {
   const rect = { x: 10, y: 10, w: 40, h: 20 };
   assert.equal(circleRectHit(30, 50, 5, rect), null);
@@ -57,7 +73,7 @@ test('DONE: a ball hitting a brick from below flips vy, destroys it and scores',
   const [ball] = state.balls;
   assert.ok(ball.vy > 0, 'vy flipped to downwards');
   assert.ok(Math.abs(ball.vx) < 1e-9, 'vx untouched');
-  assert.ok(ball.y - ball.r >= brick.y + brick.h - 1e-9, 'ball pushed out below the brick');
+  assert.ok(ball.y - ball.r >= brick.y + brick.h - 1e-9, 'ball ends the frame below the brick');
   assert.equal(brick.alive, false);
   assert.equal(brick.hits, 0);
   assert.equal(state.score, 10);
@@ -78,9 +94,32 @@ test('DONE: a ball hitting a brick from the side flips vx and keeps vy', () => {
   const [ball] = state.balls;
   assert.ok(ball.vx < 0, 'vx flipped to the left');
   assert.ok(Math.abs(ball.vy - vy) < 1e-6, 'vy unchanged');
-  assert.ok(ball.x + ball.r <= brick.x + 1e-9, 'ball pushed out to the left');
+  assert.ok(ball.x + ball.r <= brick.x + 1e-9, 'ball ends the frame left of the brick');
   assert.equal(brick.alive, false);
   assert.equal(state.score, 10);
+});
+
+// The sub-step below ends 1 unit deep inside the brick and nothing moves the
+// ball afterwards, so only the push-out can put it back on the face it hit.
+test('push-out: right after a hit from below the ball touches the bottom face', () => {
+  const state = playing(['1.........', '....1.....']);
+  const brick = brickAt(state, 1, 4);
+  const bottom = brick.y + brick.h;
+  const ball = subStepTo(state, { x: brick.x + brick.w / 2, y: bottom + state.config.ballRadius - 1 }, Math.PI / 2);
+
+  assert.ok(Math.abs(ball.y - ball.r - bottom) < 1e-9, `ball top at ${ball.y - ball.r}, face at ${bottom}`);
+  assert.ok(ball.vy > 0);
+  assert.equal(brick.alive, false);
+});
+
+test('push-out: right after a hit from the side the ball touches the left face', () => {
+  const state = playing(['1.........', '....1.....']);
+  const brick = brickAt(state, 1, 4);
+  const ball = subStepTo(state, { x: brick.x - state.config.ballRadius + 1, y: brick.y + brick.h / 2 }, Math.PI / 6);
+
+  assert.ok(Math.abs(ball.x + ball.r - brick.x) < 1e-9, `ball right edge at ${ball.x + ball.r}, face at ${brick.x}`);
+  assert.ok(ball.vx < 0);
+  assert.equal(brick.alive, false);
 });
 
 test('DONE: a strong brick loses one hit per contact and scores when it breaks', () => {

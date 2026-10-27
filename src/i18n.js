@@ -14,7 +14,7 @@ export const STRINGS = Object.freeze({
   en: Object.freeze({
     pageTitle: 'Breakout – brick-breaking arcade game',
     newGame: 'New game',
-    switchLanguage: 'Switch to Turkish',
+    switchLanguage: 'TR – Switch to Turkish',
     pause: 'Pause',
     resume: 'Resume',
     hudLabel: 'Game status',
@@ -64,7 +64,7 @@ export const STRINGS = Object.freeze({
   tr: Object.freeze({
     pageTitle: 'Breakout – tuğla kırma oyunu',
     newGame: 'Yeni oyun',
-    switchLanguage: 'İngilizceye geç',
+    switchLanguage: 'EN – İngilizceye geç',
     pause: 'Duraklat',
     resume: 'Devam et',
     hudLabel: 'Oyun durumu',

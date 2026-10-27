@@ -4,7 +4,7 @@ import { pickPowerUp } from './powerups.js';
  * Brick legend used by the level layouts. '.' (or any other character)
  * is an empty cell.
  */
-export const BRICK_LEGEND = Object.freeze({
+const BRICK_LEGEND = Object.freeze({
   1: Object.freeze({ kind: 'normal', hits: 1 }),
   2: Object.freeze({ kind: 'strong', hits: 2 }),
   3: Object.freeze({ kind: 'strong', hits: 3 }),

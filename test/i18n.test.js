@@ -22,6 +22,13 @@ test('i18n: every Turkish string uses the same placeholders as the English one',
   }
 });
 
+test('i18n: the language toggle\'s label starts with the code the button shows (label in name)', () => {
+  for (const lang of LANGUAGES) {
+    const shown = otherLanguage(lang).toUpperCase();
+    assert.ok(STRINGS[lang].switchLanguage.startsWith(`${shown} `), `${lang}: "${STRINGS[lang].switchLanguage}"`);
+  }
+});
+
 test('translate fills placeholders and formats numbers for the language', () => {
   assert.equal(translate('en', 'levelClearTitle', { level: 2 }), 'Level 2 cleared!');
   assert.equal(translate('tr', 'levelClearTitle', { level: 2 }), '2. bölüm tamam!');

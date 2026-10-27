@@ -94,7 +94,7 @@ function bindPointer(canvas, actions) {
 
   canvas.addEventListener('pointerdown', (event) => {
     if (event.pointerType === 'mouse' && event.button !== 0) return;
-    canvas.setPointerCapture(event.pointerId);
+    capturePointer(canvas, event.pointerId);
     gesture = { id: event.pointerId, x: event.clientX, y: event.clientY, start: event.timeStamp, distance: 0 };
     actions.wake();
     actions.move(localX(event));
@@ -120,4 +120,19 @@ function bindPointer(canvas, actions) {
   canvas.addEventListener('pointerup', finish);
   canvas.addEventListener('pointercancel', finish);
   canvas.addEventListener('contextmenu', (event) => event.preventDefault());
+}
+
+/**
+ * Keeps a pressed pointer's moves coming to the canvas after it slides off.
+ * Capture throws for a pointer that is no longer active (it was already
+ * released, or the event was synthetic); the press still counts without it.
+ * @param {HTMLCanvasElement} canvas
+ * @param {number} pointerId
+ */
+function capturePointer(canvas, pointerId) {
+  try {
+    canvas.setPointerCapture(pointerId);
+  } catch {
+    // Nothing to capture: moves inside the canvas still reach the handlers.
+  }
 }

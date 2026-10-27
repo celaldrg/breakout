@@ -48,7 +48,7 @@ node --test
 
 The tests use Node's built-in test runner (Node 20 or newer, no dependencies) and finish in well under a second. They cover:
 
-- ball–brick collisions: a hit from below flips the vertical speed, a side hit flips the horizontal speed, strong bricks lose one hit per contact, bricks break and add score, steel only bounces, corners and seams;
+- ball–brick collisions: a hit from below flips the vertical speed, a side hit flips the horizontal speed, strong bricks lose one hit per contact, bricks break and add score, steel only bounces, corners and seams, and the push-out that puts the ball back on the face it hit;
 - no tunnelling: a ball at top speed never passes through a one-brick-thick row;
 - the paddle bounce angle (centre straight up, edges about ±60°) and the speed cap;
 - power-ups: each one applies and the timed ones expire;
@@ -131,7 +131,7 @@ node --test
 
 Testler Node'un yerleşik test çalıştırıcısını kullanır (Node 20 ve üstü, bağımlılık yok) ve bir saniyeden çok daha kısa sürer. Kapsam:
 
-- top–tuğla çarpışmaları: alttan vuruş dikey hızı, yandan vuruş yatay hızı tersine çevirir; sağlam tuğla her temasta bir vuruş kaybeder; tuğla kırılır ve skor eklenir; çelik yalnızca sektirir; köşeler ve iki tuğlanın birleşim yeri;
+- top–tuğla çarpışmaları: alttan vuruş dikey hızı, yandan vuruş yatay hızı tersine çevirir; sağlam tuğla her temasta bir vuruş kaybeder; tuğla kırılır ve skor eklenir; çelik yalnızca sektirir; köşeler ve iki tuğlanın birleşim yeri; temas anında top, çarptığı yüzün tam dışına geri itilir;
 - içinden geçme yok: en yüksek hızdaki top bile tek sıralık tuğla duvarını delip geçmez;
 - raket sekme açısı (orta dümdüz yukarı, kenarlar yaklaşık ±60°) ve hız sınırı;
 - güçlendiriciler: her biri uygulanır, süreli olanlar sona erer;

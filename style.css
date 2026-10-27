@@ -12,7 +12,20 @@
   --shadow: 0 10px 30px rgba(2, 6, 23, 0.45);
   --speed: 200ms;
   --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  /* The game column is as wide as the viewport height allows (3:4 stage);
+     the reserve is the height left for the header, HUD and footer. */
+  --viewport-height: 100vh;
+  --stage-reserve: 132px;
+  --game-width: max(260px, (var(--viewport-height) - var(--stage-reserve)) * 0.75);
+  --panel-width: 300px;
+  --column-gap: 24px;
   color-scheme: dark;
+}
+
+@supports (height: 100dvh) {
+  :root {
+    --viewport-height: 100dvh;
+  }
 }
 
 *,
@@ -175,11 +188,8 @@ body {
   gap: 20px;
 }
 
-/* The game column is as wide as the viewport height allows (3:4 stage). */
 .game {
-  --reserve: 132px;
-  width: min(100%, max(260px, (100vh - var(--reserve)) * 0.75));
-  width: min(100%, max(260px, (100dvh - var(--reserve)) * 0.75));
+  width: min(100%, var(--game-width));
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -673,21 +683,27 @@ kbd {
 }
 
 @media (min-width: 900px) {
+  :root {
+    --stage-reserve: 196px;
+  }
+
+  /* As wide as the game column and the panel (plus the 16px side padding),
+     so the title and the buttons line up with their outer edges. */
+  .topbar {
+    max-width: min(1040px, var(--game-width) + var(--column-gap) + var(--panel-width) + 32px);
+  }
+
   .layout {
     flex-direction: row;
     justify-content: center;
     align-items: flex-start;
-    gap: 24px;
+    gap: var(--column-gap);
     padding-bottom: 12px;
-  }
-
-  .game {
-    --reserve: 196px;
   }
 
   .panel {
     flex: none;
-    width: 300px;
+    width: var(--panel-width);
   }
 }
 
