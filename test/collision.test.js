@@ -181,3 +181,33 @@ test('a ball hitting the seam between two bricks bounces once and breaks one bri
   const broken = state.bricks.filter((b) => b.row === 1 && !b.alive);
   assert.equal(broken.length, 1);
 });
+
+// A ball can still overlap a brick it is already leaving (just after a bounce
+// or a push-out). Only contacts it moves into count, so such an overlap must
+// neither damage the brick nor bend the ball's path.
+test('a ball overlapping a brick while moving away from it does not hit it', () => {
+  const cases = [
+    { name: 'below, moving down', at: (b) => ({ x: b.x + b.w / 2, y: b.y + b.h + 2 }), angle: -Math.PI / 2 },
+    { name: 'left, moving up-left', at: (b) => ({ x: b.x - 2, y: b.y + b.h / 2 }), angle: (5 * Math.PI) / 6 },
+    { name: 'corner, moving down-left', at: (b) => ({ x: b.x - 2, y: b.y + b.h + 2 }), angle: (-3 * Math.PI) / 4 },
+  ];
+  for (const { name, at, angle } of cases) {
+    const state = playing(['1.........', '....2.....']);
+    const brick = brickAt(state, 1, 4);
+    const speed = ballSpeed(state);
+    const start = at(brick);
+    const vx = speed * Math.cos(angle);
+    const vy = -speed * Math.sin(angle);
+    state.balls = [createBall(state.config, start.x, start.y, vx, vy)];
+    assert.ok(circleRectHit(start.x, start.y, state.config.ballRadius, brick), `${name}: starts overlapping`);
+
+    update(state, FRAME);
+
+    const [ball] = state.balls;
+    assert.equal(brick.hits, 2, `${name}: brick not damaged`);
+    assert.equal(brick.alive, true, name);
+    assert.equal(state.score, 0, name);
+    assert.ok(Math.abs(ball.vx - vx) < 1e-9 && Math.abs(ball.vy - vy) < 1e-9, `${name}: velocity unchanged`);
+    assert.deepEqual(drainEvents(state).filter((e) => e.type === 'brick'), [], name);
+  }
+});

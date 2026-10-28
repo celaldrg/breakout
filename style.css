@@ -12,11 +12,13 @@
   --shadow: 0 10px 30px rgba(2, 6, 23, 0.45);
   --speed: 200ms;
   --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-  /* The game column is as wide as the viewport height allows (3:4 stage);
-     the reserve is the height left for the header, HUD and footer. */
+  /* The 3:4 stage is as wide as the viewport height allows; the reserve is
+     the height left for the header, HUD and footer. --hud-beside is the
+     extra column width when the HUD sits next to the stage (short landscape). */
   --viewport-height: 100vh;
   --stage-reserve: 132px;
-  --game-width: max(260px, (var(--viewport-height) - var(--stage-reserve)) * 0.75);
+  --stage-width: max(260px, (var(--viewport-height) - var(--stage-reserve)) * 0.75);
+  --hud-beside: 0px;
   --panel-width: 300px;
   --column-gap: 24px;
   color-scheme: dark;
@@ -189,7 +191,7 @@ body {
 }
 
 .game {
-  width: min(100%, var(--game-width));
+  width: min(100%, var(--stage-width) + var(--hud-beside));
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -401,7 +403,7 @@ body {
 }
 
 .overlay-card .btn {
-  min-width: 168px;
+  min-width: min(168px, 100%);
   min-height: 44px;
   margin-top: 12px;
 }
@@ -671,6 +673,47 @@ kbd {
   }
 }
 
+/* Very narrow phones (320 px): tighter header and HUD so no label, value
+   or button text is cut or wrapped. */
+@media (max-width: 340px) {
+  .topbar,
+  .brand {
+    gap: 8px;
+  }
+
+  .brand {
+    font-size: 1.125rem;
+  }
+
+  .actions {
+    gap: 6px;
+  }
+
+  .topbar .btn {
+    padding: 0 12px;
+  }
+
+  .hud {
+    gap: 6px;
+  }
+
+  .stat {
+    padding: 5px 6px;
+  }
+
+  .stat-label {
+    letter-spacing: 0.02em;
+  }
+
+  .stat-value {
+    font-size: 0.9375rem;
+  }
+
+  .btn-icon {
+    width: 40px;
+  }
+}
+
 @media (min-width: 600px) and (max-width: 899px) {
   .panel {
     max-width: 760px;
@@ -690,7 +733,7 @@ kbd {
   /* As wide as the game column and the panel (plus the 16px side padding),
      so the title and the buttons line up with their outer edges. */
   .topbar {
-    max-width: min(1040px, var(--game-width) + var(--column-gap) + var(--panel-width) + 32px);
+    max-width: min(1040px, var(--stage-width) + var(--hud-beside) + var(--column-gap) + var(--panel-width) + 32px);
   }
 
   .layout {
@@ -704,6 +747,62 @@ kbd {
   .panel {
     flex: none;
     width: var(--panel-width);
+  }
+}
+
+/* Short landscape screens (a phone turned sideways): the HUD moves beside
+   the stage, so the whole playfield fits under the header without scrolling. */
+@media (orientation: landscape) and (max-height: 480px) {
+  :root {
+    --stage-reserve: 68px;
+    --stage-width: calc((var(--viewport-height) - var(--stage-reserve)) * 0.75);
+    --hud-width: 108px;
+    --hud-beside: calc(var(--hud-width) + 10px); /* HUD plus the .game gap */
+  }
+
+  .topbar {
+    padding-block: 6px;
+  }
+
+  .game {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .hud {
+    flex: none;
+    flex-direction: column;
+    gap: 6px;
+    width: var(--hud-width);
+  }
+
+  .stat {
+    padding-block: 4px;
+  }
+
+  .hud .btn-icon {
+    width: auto;
+  }
+
+  .stage {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .overlay {
+    padding: 10px;
+  }
+
+  .overlay-card {
+    padding: 16px 12px 14px;
+  }
+
+  .overlay-card h2 {
+    font-size: 1.25rem;
+  }
+
+  .overlay-card p {
+    font-size: 0.875rem;
   }
 }
 
